@@ -184,7 +184,12 @@ const playVideo = async (index) => {
   if (v) {
     // 再保险：播放前再暂停一次，避免其它来源触发 play
     pauseAllVideos()
-    v.play().catch(() => {})
+    if (v.play) {
+      const playPromise = v.play()
+      if (playPromise && playPromise.catch) {
+        playPromise.catch(() => {})
+      }
+    }
     playing.value = true
     if (videos.value[index]?.id) viewVideo(videos.value[index].id)
   } else {

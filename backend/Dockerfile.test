@@ -1,0 +1,11 @@
+FROM --platform=$BUILDPLATFORM maven:3.8-openjdk-11 AS test
+
+WORKDIR /app
+
+COPY settings.xml /root/.m2/settings.xml
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+COPY src ./src
+
+CMD ["mvn", "test", "-B"]

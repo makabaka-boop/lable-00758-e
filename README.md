@@ -1,5 +1,163 @@
 # 短视频浏览系统
 
+## 自动化测试方案
+
+本项目已实现完整的前后端自动化测试方案，支持通过 Docker 一键执行所有测试。
+
+### 快速开始 - 一键运行所有测试
+
+在项目根目录执行以下命令即可运行所有测试：
+
+```bash
+# 运行所有测试（后端 + 前端）
+./run-tests.sh
+```
+
+### 单独运行测试
+
+```bash
+# 仅运行后端测试
+./run-backend-tests.sh
+
+# 仅运行前端测试
+./run-frontend-tests.sh
+```
+
+### 使用 Docker Compose 直接运行
+
+```bash
+# 运行后端测试
+docker-compose -f docker-compose.test.yml up --build --abort-on-container-exit backend-test
+
+# 运行前端测试
+docker-compose -f docker-compose.test.yml up --build --abort-on-container-exit frontend-test
+
+# 清理测试环境
+docker-compose -f docker-compose.test.yml down -v
+```
+
+### 本地直接运行测试（不使用 Docker）
+
+#### 后端测试
+
+```bash
+cd backend
+mvn test
+```
+
+#### 前端测试
+
+```bash
+cd frontend
+npm install
+npm run test
+
+# 生成测试覆盖率报告
+npm run test:coverage
+```
+
+### 测试覆盖范围
+
+#### 后端测试（Spring Boot + JUnit 5 + Mockito）
+
+##### 单元测试
+- **UserServiceTest** (`backend/src/test/java/com/shortvideo/service/UserServiceTest.java`)
+  - 登录功能（成功/失败/密码错误）
+  - 用户注册（成功/用户名已存在/默认昵称）
+  - 用户查询（存在/不存在）
+
+- **VideoServiceTest** (`backend/src/test/java/com/shortvideo/service/VideoServiceTest.java`)
+  - 视频上传（成功/文件校验/类型校验/大小校验/标题校验）
+  - 视频列表获取（带/不带用户ID）
+  - 点赞功能（首次点赞/取消点赞）
+  - 收藏功能（首次收藏/取消收藏）
+  - 评论功能（添加评论/获取评论列表）
+  - 播放量统计
+  - 视频删除
+
+- **JwtUtilTest** (`backend/src/test/java/com/shortvideo/util/JwtUtilTest.java`)
+  - Token 生成与解析
+  - Token 有效性验证
+  - 管理员 Token 测试
+
+##### 接口层测试
+- **UserControllerTest** (`backend/src/test/java/com/shortvideo/controller/UserControllerTest.java`)
+  - 登录接口（成功/失败/参数校验）
+  - 管理员登录测试
+
+- **VideoControllerTest** (`backend/src/test/java/com/shortvideo/controller/VideoControllerTest.java`)
+  - 视频列表接口
+  - 点赞/收藏接口
+  - 评论接口
+  - 视频上传/删除接口
+  - 参数校验测试
+  - 异常处理测试
+
+##### 拦截器与异常处理测试
+- **JwtInterceptorTest** (`backend/src/test/java/com/shortvideo/interceptor/JwtInterceptorTest.java`)
+  - OPTIONS 请求放行
+  - Token 验证（无Token/格式错误/无效Token/有效Token）
+  - 用户ID注入测试
+
+- **GlobalExceptionHandlerTest** (`backend/src/test/java/com/shortvideo/exception/GlobalExceptionHandlerTest.java`)
+  - 业务异常处理
+  - 参数校验异常处理
+  - 文件上传异常处理
+  - 未知系统异常处理
+
+#### 前端测试（Vue 3 + Vitest + Vue Test Utils）
+
+##### API 封装测试
+- **api.test.js** (`frontend/src/api/api.test.js`)
+  - 所有 API 方法的调用验证
+  - 请求参数传递测试
+
+##### 路由测试
+- **router.test.js** (`frontend/src/router/router.test.js`)
+  - 路由配置验证
+  - 重定向规则测试
+
+##### 组件测试
+- **Login.test.js** (`frontend/src/views/Login.test.js`)
+  - 表单渲染测试
+  - 前端表单校验
+  - 登录功能（普通用户/管理员）
+  - 错误处理（登录失败/网络错误）
+  - 加载状态测试
+
+- **Admin.test.js** (`frontend/src/views/Admin.test.js`)
+  - 权限控制（未登录/非管理员/管理员）
+  - 视频列表加载
+  - 视频删除功能
+  - 退出登录功能
+  - 上传弹窗控制
+
+- **Mobile.test.js** (`frontend/src/views/Mobile.test.js`)
+  - 视频列表加载
+  - 点赞功能（未登录提示/已登录点赞）
+  - 收藏功能（未登录提示/已登录收藏）
+  - 评论功能（查看/发表）
+  - 登录状态显示
+
+### 测试技术栈
+
+| 层级 | 技术 |
+|------|------|
+| 后端单元测试 | JUnit 5 + Mockito |
+| 后端接口测试 | Spring Boot Test + MockMvc |
+| 测试数据库 | H2 内存数据库 |
+| 前端单元测试 | Vitest |
+| 前端组件测试 | Vue Test Utils |
+| 测试环境 | jsdom |
+| 容器化 | Docker + Docker Compose |
+
+### 测试报告
+
+- 后端测试报告：`backend/target/surefire-reports/`
+- 前端覆盖率报告：`frontend/coverage/`
+
+---
+
 ## How to Run
 
 ### 使用 Docker Compose 运行（推荐）

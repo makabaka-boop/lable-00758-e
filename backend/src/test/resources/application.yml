@@ -1,0 +1,37 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MySQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  sql:
+    init:
+      mode: never
+  h2:
+    console:
+      enabled: true
+
+video:
+  upload-path: /tmp/test-uploads/videos
+  allowed-types: video/mp4,video/webm,video/ogg,video/quicktime
+  max-size: 104857600
+
+jwt:
+  secret: test-secret-key-must-be-at-least-256-bits-long-for-hmac
+  expiration: 86400000
+
+logging:
+  level:
+    root: WARN
+    com.shortvideo: DEBUG

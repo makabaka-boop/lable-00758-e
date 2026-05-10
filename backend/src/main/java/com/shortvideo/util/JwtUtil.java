@@ -36,6 +36,9 @@ public class JwtUtil {
     }
     
     public Claims parseToken(String token) {
+        if (token == null || token.isEmpty()) {
+            return null;
+        }
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(key)

@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  backend-test:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.test
+    container_name: shortvideo-backend-test
+    environment:
+      MYSQL_HOST: mysql-test
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root123
+      JWT_SECRET: test-secret-key-must-be-at-least-256-bits-for-testing-purposes
+    volumes:
+      - ./backend/target:/app/target
+      - ./backend/src:/app/src:ro
+    depends_on:
+      - mysql-test
+
+  frontend-test:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.test
+    container_name: shortvideo-frontend-test
+    volumes:
+      - ./frontend/src:/app/src:ro
+      - ./frontend/coverage:/app/coverage
+    command: npm run test
+
+  mysql-test:
+    image: mysql:8.0
+    container_name: shortvideo-mysql-test
+    restart: no
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: shortvideo
+      TZ: Asia/Shanghai
+    ports:
+      - "3307:3306"
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot123"]
+      interval: 10s
+      timeout: 5s
+      retries: 10

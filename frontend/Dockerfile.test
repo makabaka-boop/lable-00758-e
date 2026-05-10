@@ -1,0 +1,10 @@
+FROM --platform=$BUILDPLATFORM node:18-alpine AS test
+
+WORKDIR /app
+
+COPY package.json ./
+RUN npm install --registry=https://registry.npmmirror.com
+
+COPY . .
+
+CMD ["npm", "run", "test"]

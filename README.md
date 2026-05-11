@@ -166,3 +166,108 @@ docker-compose down -v && docker-compose up --build -d
 - 后端：Maven 构建 + Eclipse Temurin JRE 11 运行
 - 数据库：MySQL 8.0，支持健康检查
 - 数据持久化：MySQL 数据和视频文件使用 Docker Volume
+
+## 自动化测试
+
+### 快速开始（Docker 一键执行）
+
+```bash
+# macOS/Linux
+./run-tests.sh
+
+# Windows
+run-tests.bat
+```
+
+### 单独运行测试
+
+```bash
+# 运行后端测试
+docker compose run --rm backend-test
+
+# 运行前端测试
+docker compose run --rm frontend-test
+```
+
+### 本地运行测试
+
+#### 后端测试
+
+```bash
+cd backend
+mvn test
+```
+
+#### 前端测试
+
+```bash
+cd frontend
+npm install
+npm run test
+
+# 生成覆盖率报告
+npm run test:coverage
+```
+
+### 测试覆盖范围
+
+#### 后端测试（JUnit 5 + Mockito + Spring Boot Test）
+
+| 模块 | 测试内容 | 覆盖情况 |
+|------|----------|----------|
+| **UserService** | 登录成功/失败、注册成功/失败、按ID查询 | ✅ |
+| **VideoService** | 上传视频（成功/各种失败场景）、获取视频列表、点赞/取消点赞、收藏/取消收藏、添加评论、获取评论、删除视频 | ✅ |
+| **JwtUtil** | Token生成、解析、验证、获取用户ID | ✅ |
+| **UserController** | 登录接口（成功/失败/参数校验） | ✅ |
+| **VideoController** | 视频列表、点赞/收藏/评论、上传/删除、JWT认证拦截 | ✅ |
+| **GlobalExceptionHandler** | 未授权访问、参数校验异常 | ✅ |
+
+#### 前端测试（Vitest + Vue Test Utils）
+
+| 模块 | 测试内容 | 覆盖情况 |
+|------|----------|----------|
+| **API 封装** | 请求/响应拦截器、所有API方法调用 | ✅ |
+| **Router** | 路由配置验证 | ✅ |
+| **Login.vue** | 表单渲染、前端校验、登录成功/失败、Loading状态 | ✅ |
+| **Admin.vue** | 权限控制、视频列表、上传/删除、退出登录 | ✅ |
+| **Mobile.vue** | 视频加载、点赞/收藏/评论、登录提示、退出登录 | ✅ |
+
+### 测试目录结构
+
+```
+.
+├── backend/src/test/
+│   ├── java/com/shortvideo/
+│   │   ├── controller/          # 控制器层测试
+│   │   │   ├── UserControllerTest.java
+│   │   │   └── VideoControllerTest.java
+│   │   ├── service/             # 服务层单元测试
+│   │   │   ├── UserServiceTest.java
+│   │   │   └── VideoServiceTest.java
+│   │   ├── util/                # 工具类测试
+│   │   │   └── JwtUtilTest.java
+│   │   └── exception/           # 异常处理测试
+│   │       └── GlobalExceptionHandlerTest.java
+│   └── resources/
+│       └── application-test.yml # 测试环境配置（H2 内存数据库）
+└── frontend/src/
+    ├── api/__tests__/
+    │   └── index.test.js        # API 封装测试
+    ├── router/__tests__/
+    │   └── index.test.js        # 路由配置测试
+    ├── views/__tests__/
+    │   ├── Login.test.js        # 登录页测试
+    │   ├── Admin.test.js        # 管理后台测试
+    │   └── Mobile.test.js       # 移动端测试
+    └── test/
+        └── setup.js             # Vitest 测试环境配置
+```
+
+### 测试特性
+
+- **后端**：使用 H2 内存数据库，测试环境隔离、可重复
+- **后端**：对 Repository 层进行 Mock，专注业务逻辑测试
+- **后端**：Spring Boot Test 集成测试，验证接口层行为
+- **前端**：JSDOM 环境模拟浏览器
+- **前端**：对 API 调用进行 Mock，专注组件逻辑
+- **统一入口**：Docker 一键执行，无需手工配置环境

@@ -36,7 +36,11 @@ public class JwtInterceptor implements HandlerInterceptor {
         
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(401);
-        response.getWriter().write(objectMapper.writeValueAsString(Result.error("未登录或token已过期")));
+        try {
+            response.getWriter().write(objectMapper.writeValueAsString(Result.error(401, "未登录或token已过期")));
+        } catch (Exception e) {
+            response.getWriter().write("{\"code\":401,\"message\":\"未登录或token已过期\",\"data\":null}");
+        }
         return false;
     }
 }

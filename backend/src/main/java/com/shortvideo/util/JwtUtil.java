@@ -36,13 +36,16 @@ public class JwtUtil {
     }
     
     public Claims parseToken(String token) {
+        if (token == null || token.isEmpty()) {
+            return null;
+        }
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-        } catch (JwtException e) {
+        } catch (JwtException | IllegalArgumentException e) {
             return null;
         }
     }

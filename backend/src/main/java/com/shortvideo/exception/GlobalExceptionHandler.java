@@ -4,6 +4,7 @@ import com.shortvideo.dto.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -67,6 +68,13 @@ public class GlobalExceptionHandler {
     public Result<Void> handleMaxUploadSize(MaxUploadSizeExceededException e) {
         log.warn("文件过大: {}", e.getMessage());
         return Result.error(400, "文件大小超过限制(最大100MB)");
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Result<Void> handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
+        log.warn("请求体解析失败: {}", e.getMessage());
+        return Result.error(400, "请求体格式错误");
     }
 
     @ExceptionHandler(Exception.class)

@@ -50,6 +50,28 @@ services:
     depends_on:
       - backend
 
+  backend-test:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.test
+    container_name: shortvideo-backend-test
+    profiles:
+      - test
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/target:/app/target
+
+  frontend-test:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.test
+    container_name: shortvideo-frontend-test
+    profiles:
+      - test
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/coverage:/app/coverage
+
 volumes:
   mysql_data:
   video_uploads:
